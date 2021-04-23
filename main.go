@@ -30,5 +30,6 @@ func main() {
 	}()
 
 	http.HandleFunc("/", proxy.HTTPHandler)
+	log.Println("EthMiner API proxy serving on "+*serveAddress)
 	log.Fatal(http.ListenAndServe(*serveAddress, nil))
 }
