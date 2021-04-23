@@ -1,15 +1,26 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
-func main()  {
+func main() {
+	minerAddress := flag.String("miner", "", "Miner API IP:Port")
+	serveAddress := flag.String("serve", ":8081", "HTTP Server API:Port")
+	flag.Parse()
+
+	if *minerAddress == "" {
+		flag.PrintDefaults()
+		return
+	}
+
 	proxy := NewProxy()
-	err := proxy.Connect("192.168.1.37:8083")
+	err := proxy.Connect(*minerAddress)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
+		return
 	}
 
 	defer func() {
@@ -19,5 +30,5 @@ func main()  {
 	}()
 
 	http.HandleFunc("/", proxy.HTTPHandler)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServe(*serveAddress, nil))
 }
